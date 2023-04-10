@@ -23,7 +23,33 @@ abstract class FlutterKakaoMapNativePlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  Future<MapType> getMapView() {
+    throw UnimplementedError('getMapView() has not been implemented.');
+  }
+
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
+}
+
+enum CurrentLocationTrackingModeConstants {
+  /// 현위치 트랙킹 모드 및 나침반 모드 Off
+  trackingModeOff,
+
+  /// 현위치 트랙킹 모드 On, 단말의 위치에 따라 지도 중심이 이동한다. 나침반 모드는 꺼진 상태
+  trackingModeOnWithoutHeading,
+
+  /// 현위치 트랙킹 모드 On + 나침반 모드 On, 단말의 위치에 따라 지도 중심이 이동하며 단말의 방향에 따라 지도가 회전한다.(나침반 모드 On)
+  trackingModeOnWithHeading,
+}
+
+enum MapType {
+  /// 기본 지도
+  standard,
+
+  /// 위성 지도
+  satellite,
+
+  /// 하이브리드 지도
+  hybrid,
 }
