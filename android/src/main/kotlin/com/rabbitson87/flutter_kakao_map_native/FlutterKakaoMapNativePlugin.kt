@@ -1,12 +1,9 @@
 package com.rabbitson87.flutter_kakao_map_native
 
-import android.app.Activity
 import android.util.Log
-import androidx.annotation.NonNull
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.Event
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -26,10 +23,10 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
   private lateinit var channel : MethodChannel
   private var pluginBinding: FlutterPluginBinding? = null
   private var activityBinding: ActivityPluginBinding? = null
-  private var lifecycle: Lifecycle? = null;
-  private var state: Event? = null;
+  private var lifecycle: Lifecycle? = null
+  var state: Event? = null
 
-  override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPluginBinding) {
+  override fun onAttachedToEngine(flutterPluginBinding: FlutterPluginBinding) {
     pluginBinding = flutterPluginBinding
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_kakao_map_native")
     channel.setMethodCallHandler(this)
@@ -37,25 +34,23 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
 
   fun updateState(event: Event) {
     Log.e("Activity state: ", event.toString())
-            state = event
+    state = event
   }
 
-  override fun onAttachedToActivity(@NonNull binding: ActivityPluginBinding) {
+  override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     activityBinding = binding
     lifecycle = (binding.lifecycle as HiddenLifecycleReference).lifecycle
-    lifecycle?.addObserver(LifecycleEventObserver { source, event -> updateState(event)
+    lifecycle?.addObserver(
+      LifecycleEventObserver { _, event -> updateState(event)
     })
-    val activity: Activity = binding.activity
-    // Use lifecycle as desired.
   }
 
-  override fun onReattachedToActivityForConfigChanges(@NonNull binding: ActivityPluginBinding) {
-    activityBinding = binding
-    lifecycle = (binding.lifecycle as HiddenLifecycleReference).lifecycle
-      lifecycle?.addObserver(LifecycleEventObserver { source, event -> updateState(event)
+  override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+    (binding.lifecycle as HiddenLifecycleReference).lifecycle.also { lifecycle = it }
+      lifecycle?.addObserver(
+        LifecycleEventObserver { _, event -> updateState(event)
       })
-      val activity: Activity = binding.activity
-      // Use lifecycle as desired.
+    activityBinding = binding
   }
 
   override fun onDetachedFromActivity() {
@@ -64,15 +59,19 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
-    lifecycle = (activityBinding?.lifecycle as HiddenLifecycleReference).lifecycle
+    (activityBinding?.lifecycle as HiddenLifecycleReference).lifecycle.also { lifecycle = it }
   }
 
   private var methods = mutableMapOf<String, (Result) -> Unit>(
     "getPlatformVersion" to { result: Result ->
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
-    }
+    },
+    "buildKakaoMap" to { result: Result->
+
+      result.success("KakaoMap")
+    },
   )
-  override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+  override fun onMethodCall(call: MethodCall, result: Result) {
     if (methods[call.method] != null) {
         methods[call.method]!!.invoke(result)
     } else {
@@ -80,7 +79,7 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
     }
   }
 
-  override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+  override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
     channel.setMethodCallHandler(null)
     pluginBinding = null
   }
