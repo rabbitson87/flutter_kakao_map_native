@@ -22,21 +22,22 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
-  private lateinit var channel : MethodChannel
+  private var channel : MethodChannel? = null
   private var pluginBinding: FlutterPluginBinding? = null
   private var activityBinding: ActivityPluginBinding? = null
   private var lifecycle: Lifecycle? = null
-  var state: Event? = null
+  private var state: Event? = null
 
   /// FlutterPlugin
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPluginBinding) {
     pluginBinding = flutterPluginBinding
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_kakao_map_native")
-    channel.setMethodCallHandler(this)
+    channel!!.setMethodCallHandler(this)
   }
 
   override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
-    channel.setMethodCallHandler(null)
+    channel!!.setMethodCallHandler(null)
+    channel = null
     pluginBinding = null
   }
 
@@ -61,7 +62,7 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
     lifecycle = (binding.lifecycle as HiddenLifecycleReference).lifecycle
     lifecycle?.addObserver(this)
     pluginBinding
-      ?.platformViewRegistry!!.registerViewFactory("flutter_kakao_map_native", KakaoMapFactory(state, pluginBinding!!, activityBinding!!))
+      ?.platformViewRegistry?.registerViewFactory("flutter_kakao_map_native", KakaoMapFactory(state, pluginBinding!!, activityBinding!!))
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
@@ -82,7 +83,6 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
 
   /// LifecycleEventObserver
   override fun onStateChanged(source: LifecycleOwner, event: Event) {
-    Log.e("Activity state: ", event.toString())
     state = event
   }
 }

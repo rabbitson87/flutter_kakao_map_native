@@ -12,6 +12,7 @@ class KakaoMapFactory(private val state: Event?, private val pluginBinding: Flut
 
     override fun create(context: Context?, viewId: Int, args: Any?): PlatformView {
         val params = args as Map<String, Any>
-        return KakaoMapController(context!!, viewId, params, state, pluginBinding, activityBinding)
+        var builder = KakaoMapBuilder()
+        return builder.build(context!!, viewId, params, state, pluginBinding, activityBinding)
     }
 }
