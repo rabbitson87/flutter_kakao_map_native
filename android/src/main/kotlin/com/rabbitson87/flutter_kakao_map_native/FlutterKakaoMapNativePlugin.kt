@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.Event
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -60,7 +61,7 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
     lifecycle = (binding.lifecycle as HiddenLifecycleReference).lifecycle
     lifecycle?.addObserver(this)
     pluginBinding
-      .getPlatformViewRegistry().registerViewFactory("flutter_kakao_map_native", KakaoMapFactory(state, pluginBinding!, activityBinding!.activity!))
+      ?.platformViewRegistry!!.registerViewFactory("flutter_kakao_map_native", KakaoMapFactory(state, pluginBinding!!, activityBinding!!))
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
@@ -71,7 +72,7 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
 
   override fun onDetachedFromActivity() {
     activityBinding = null
-    lifecycle.removeObserver(this)
+    lifecycle?.removeObserver(this)
     lifecycle = null
   }
 
@@ -80,7 +81,7 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
   }
 
   /// LifecycleEventObserver
-  override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+  override fun onStateChanged(source: LifecycleOwner, event: Event) {
     Log.e("Activity state: ", event.toString())
     state = event
   }
