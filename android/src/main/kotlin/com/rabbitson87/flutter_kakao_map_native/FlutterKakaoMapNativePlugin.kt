@@ -1,6 +1,8 @@
 package com.rabbitson87.flutter_kakao_map_native
 
-import android.util.Log
+import android.app.Activity
+import android.app.Application.ActivityLifecycleCallbacks
+import android.os.Bundle
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.Event
 import androidx.lifecycle.LifecycleEventObserver
@@ -17,7 +19,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 
 /** FlutterKakaoMapNativePlugin */
 class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAware,
-    LifecycleEventObserver {
+    LifecycleEventObserver, ActivityLifecycleCallbacks {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -85,4 +87,45 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
   override fun onStateChanged(source: LifecycleOwner, event: Event) {
     state = event
   }
+
+  /// ActivityLifecycleCallbacks
+  override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+    if (activity.hashCode() == activityBinding?.activity.hashCode()) {
+      state = Event.ON_CREATE
+    }
+  }
+
+  override fun onActivityStarted(activity: Activity) {
+    if (activity.hashCode() == activityBinding?.activity.hashCode()) {
+      state = Event.ON_START
+    }
+  }
+
+  override fun onActivityResumed(activity: Activity) {
+    if (activity.hashCode() == activityBinding?.activity.hashCode()) {
+      state = Event.ON_RESUME
+    }
+  }
+
+  override fun onActivityPaused(activity: Activity) {
+    if (activity.hashCode() == activityBinding?.activity.hashCode()) {
+      state = Event.ON_PAUSE
+    }
+  }
+
+  override fun onActivityStopped(activity: Activity) {
+    if (activity.hashCode() == activityBinding?.activity.hashCode()) {
+      state = Event.ON_STOP
+    }
+  }
+
+  override fun onActivitySaveInstanceState(activity: Activity, savedInstanceState: Bundle) {
+  }
+
+  override fun onActivityDestroyed(activity: Activity) {
+    if (activity.hashCode() == activityBinding?.activity.hashCode()) {
+      state = Event.ON_DESTROY
+    }
+  }
+
 }
