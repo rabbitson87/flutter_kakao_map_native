@@ -18,13 +18,12 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
 /** FlutterKakaoMapNativePlugin */
-class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAware,
+class FlutterKakaoMapNativePlugin: FlutterPlugin, ActivityAware,
     LifecycleEventObserver, ActivityLifecycleCallbacks {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
-  private var channel : MethodChannel? = null
   private var pluginBinding: FlutterPluginBinding? = null
   private var activityBinding: ActivityPluginBinding? = null
   private var lifecycle: Lifecycle? = null
@@ -33,30 +32,11 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
   /// FlutterPlugin
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPluginBinding) {
     pluginBinding = flutterPluginBinding
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_kakao_map_native")
-    channel!!.setMethodCallHandler(this)
   }
 
   override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
-    channel!!.setMethodCallHandler(null)
-    channel = null
     pluginBinding = null
   }
-
-  /// MethodCallHandler
-  override fun onMethodCall(call: MethodCall, result: Result) {
-    if (methods[call.method] != null) {
-      methods[call.method]!!.invoke(result)
-    } else {
-      result.notImplemented()
-    }
-  }
-
-  private var methods = mutableMapOf<String, (Result) -> Unit>(
-    "getPlatformVersion" to { result: Result ->
-      result.success("Android ${android.os.Build.VERSION.RELEASE}")
-    },
-  )
 
   /// ActivityAware
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
@@ -64,7 +44,9 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
     lifecycle = (binding.lifecycle as HiddenLifecycleReference).lifecycle
     lifecycle?.addObserver(this)
     pluginBinding
-      ?.platformViewRegistry?.registerViewFactory("flutter_kakao_map_native", KakaoMapFactory(state, pluginBinding!!, activityBinding!!))
+      ?.platformViewRegistry?.registerViewFactory("flutter_kakao_map_native",
+        KakaoMapFactory(state, pluginBinding!!, activityBinding!!)
+      )
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
@@ -80,7 +62,7 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
-    (activityBinding?.lifecycle as HiddenLifecycleReference).lifecycle.also { lifecycle = it }
+    this.onDetachedFromActivity()
   }
 
   /// LifecycleEventObserver
@@ -119,13 +101,14 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
     }
   }
 
-  override fun onActivitySaveInstanceState(activity: Activity, savedInstanceState: Bundle) {
-  }
-
   override fun onActivityDestroyed(activity: Activity) {
     if (activity.hashCode() == activityBinding?.activity.hashCode()) {
       state = Event.ON_DESTROY
+      activity.application.unregisterActivityLifecycleCallbacks(this)
     }
   }
+
+  override fun onActivitySaveInstanceState(activity: Activity, savedInstanceState: Bundle) {}
+
 
 }
