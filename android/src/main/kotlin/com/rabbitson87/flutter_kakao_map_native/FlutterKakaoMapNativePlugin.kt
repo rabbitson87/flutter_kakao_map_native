@@ -28,6 +28,7 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, ActivityAware,
   private var activityBinding: ActivityPluginBinding? = null
   private var lifecycle: Lifecycle? = null
   private var state: Event? = null
+  private val viewType: String = "flutter_kakao_map_native"
 
   /// FlutterPlugin
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPluginBinding) {
@@ -44,7 +45,7 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, ActivityAware,
     lifecycle = (binding.lifecycle as HiddenLifecycleReference).lifecycle
     lifecycle?.addObserver(this)
     pluginBinding
-      ?.platformViewRegistry?.registerViewFactory("flutter_kakao_map_native",
+      ?.platformViewRegistry?.registerViewFactory(viewType,
         KakaoMapFactory(state, pluginBinding!!, activityBinding!!)
       )
   }
