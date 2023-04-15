@@ -42,6 +42,13 @@ class KakaoMapController(context: Context, viewId: Int, args: Map<String, Any>, 
     }
 
     private var methods = mutableMapOf<String, (MethodCall, Result) -> Unit>(
+        "init" to { call, result ->
+            var targetViewId:Int = -1
+            if (call.argument<String>("viewId") != null) {
+                targetViewId = call.argument<String>("viewId")!! as Int
+            }
+            result.success(targetViewId == viewId)
+        },
         "getPlatformVersion" to { _, result ->
             result.success("Android ${android.os.Build.VERSION.RELEASE}")
         },

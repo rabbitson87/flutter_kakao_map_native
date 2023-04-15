@@ -28,6 +28,10 @@ abstract class FlutterKakaoMapNativePlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  Future<void> init(int viewId) {
+    throw UnimplementedError('init() has not been implemented.');
+  }
+
   Future<MapType> getMapView() {
     throw UnimplementedError('getMapView() has not been implemented.');
   }
@@ -40,6 +44,8 @@ abstract class FlutterKakaoMapNativePlatform extends PlatformInterface {
       PlatformViewCreatedCallback onPlatformViewCreated) {
     throw UnimplementedError('buildView() has not been implemented.');
   }
+
+  channel(int viewId) {}
 }
 
 enum CurrentLocationTrackingModeConstants {

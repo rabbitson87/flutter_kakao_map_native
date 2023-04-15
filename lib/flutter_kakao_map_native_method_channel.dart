@@ -14,6 +14,34 @@ class MethodChannelFlutterKakaoMapNative extends FlutterKakaoMapNativePlatform {
 
   final _viewType = 'flutter_kakao_map_native';
 
+  final Map<int, MethodChannel> _channels = {};
+
+  /// Accesses the MethodChannel associated to the passed mapId.
+  MethodChannel? channel(int viewId) {
+    return _channels[viewId];
+  }
+
+  @override
+  Future<void> init(int viewId) {
+    MethodChannel channel;
+    if (!_channels.containsKey(viewId)) {
+      channel = MethodChannel('flutter_kakao_map_native_$viewId');
+      channel.setMethodCallHandler(
+              (MethodCall call) => _handleMethodCall(call, viewId));
+      _channels[viewId] = channel;
+    }
+    return methodChannel.invokeMethod<void>('init', <String, dynamic>{
+      'viewId': viewId,
+    });
+  }
+
+  Future<dynamic> _handleMethodCall(MethodCall call, int viewId) async {
+    switch (call.method) {
+      default:
+        throw MissingPluginException();
+    }
+  }
+
   @override
   Future<String?> getPlatformVersion() async {
     final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
