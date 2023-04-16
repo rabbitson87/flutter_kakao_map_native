@@ -36,6 +36,17 @@ class _KakaoMapState extends State<KakaoMap> {
   Completer<KakaoMapController>();
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _gestureRecognizers = <Factory<OneSequenceGestureRecognizer>>{
+      Factory<OneSequenceGestureRecognizer>(
+        () => EagerGestureRecognizer(),
+      ),
+    }.toSet();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Map<String, dynamic> creationParams = {
       'initialCameraPosition': widget._initialCameraPosition.toJson(),
@@ -47,9 +58,9 @@ class _KakaoMapState extends State<KakaoMap> {
     );
   }
 
-  Future<void> onPlatformViewCreated(int id) async {
+  Future<void> onPlatformViewCreated(int viewId) async {
     final KakaoMapController controller = await KakaoMapController.init(
-      id,
+      viewId,
       widget._initialCameraPosition,
       this,
     );

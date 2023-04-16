@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_kakao_map_native/flutter_kakao_map_native.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const MyApp());
 }
 
@@ -68,13 +70,12 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: Column(
             children: [
-              _isMapCreated
-                  ? SizedBox(
+              SizedBox(
                 width: 300.0,
                 height: 200.0,
                 child: kakaoMap,
-              )
-                  : Text('Running on: $_platformVersion\n'),
+              ),
+              Text('Running on: $_platformVersion\n'),
             ],
           ) ,
         ),

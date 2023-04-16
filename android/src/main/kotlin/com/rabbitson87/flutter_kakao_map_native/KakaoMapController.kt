@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.Event
 import androidx.lifecycle.LifecycleEventObserver
@@ -11,10 +13,10 @@ import androidx.lifecycle.LifecycleOwner
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.embedding.engine.plugins.lifecycle.HiddenLifecycleReference
-import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
+import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.platform.PlatformView
 import net.daum.mf.map.api.MapView
 
@@ -47,6 +49,7 @@ class KakaoMapController(context: Context, viewId: Int, args: Map<String, Any>, 
             if (call.argument<String>("viewId") != null) {
                 targetViewId = call.argument<String>("viewId")!! as Int
             }
+            Log.e("tag", "targetViewId == viewId: ${targetViewId == viewId}")
             result.success(targetViewId == viewId)
         },
         "getPlatformVersion" to { _, result ->
@@ -65,6 +68,14 @@ class KakaoMapController(context: Context, viewId: Int, args: Map<String, Any>, 
     override fun getView(): MapView {
         return mapView
     }
+
+    override fun onFlutterViewAttached(flutterView: View) {
+        Log.println (Log.INFO, null, "onFlutterViewAttached")
+    }
+
+    override fun onFlutterViewDetached() {
+    }
+
 
     override fun dispose() {
         if (!isDisposed) {

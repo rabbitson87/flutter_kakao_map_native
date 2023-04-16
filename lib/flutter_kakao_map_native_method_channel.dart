@@ -9,14 +9,14 @@ import 'flutter_kakao_map_native_platform_interface.dart';
 /// An implementation of [FlutterKakaoMapNativePlatform] that uses method channels.
 class MethodChannelFlutterKakaoMapNative extends FlutterKakaoMapNativePlatform {
   /// The method channel used to interact with the native platform.
-  @visibleForTesting
-  final methodChannel = const MethodChannel('flutter_kakao_map_native');
 
   final _viewType = 'flutter_kakao_map_native';
 
   final Map<int, MethodChannel> _channels = {};
 
   /// Accesses the MethodChannel associated to the passed mapId.
+  @visibleForTesting
+  @override
   MethodChannel? channel(int viewId) {
     return _channels[viewId];
   }
@@ -30,7 +30,7 @@ class MethodChannelFlutterKakaoMapNative extends FlutterKakaoMapNativePlatform {
               (MethodCall call) => _handleMethodCall(call, viewId));
       _channels[viewId] = channel;
     }
-    return methodChannel.invokeMethod<void>('init', <String, dynamic>{
+    return _channels[viewId]!.invokeMethod<void>('init', <String, dynamic>{
       'viewId': viewId,
     });
   }
@@ -43,18 +43,13 @@ class MethodChannelFlutterKakaoMapNative extends FlutterKakaoMapNativePlatform {
   }
 
   @override
-  Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
-    return version;
-  }
-
-  @override
   Widget buildView(Map<String, dynamic> creationParams, Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
       PlatformViewCreatedCallback onPlatformViewCreated) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
         viewType: _viewType,
-        layoutDirection: TextDirection.ltr,
+        onPlatformViewCreated: onPlatformViewCreated,
+        gestureRecognizers: gestureRecognizers,
         creationParams: creationParams,
         creationParamsCodec: const StandardMessageCodec(),
       );
