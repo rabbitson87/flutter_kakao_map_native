@@ -3,6 +3,7 @@ package com.rabbitson87.flutter_kakao_map_native
 import android.app.Activity
 import android.app.Application.ActivityLifecycleCallbacks
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.Event
 import androidx.lifecycle.LifecycleEventObserver
@@ -12,10 +13,6 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.embedding.engine.plugins.lifecycle.HiddenLifecycleReference
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
 
 /** FlutterKakaoMapNativePlugin */
 class FlutterKakaoMapNativePlugin: FlutterPlugin, ActivityAware,
@@ -33,6 +30,7 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, ActivityAware,
   /// FlutterPlugin
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPluginBinding) {
     pluginBinding = flutterPluginBinding
+    Log.e("activity", "onAttachedToEngine")
   }
 
   override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
@@ -43,6 +41,7 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, ActivityAware,
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     activityBinding = binding
     lifecycle = (binding.lifecycle as HiddenLifecycleReference).lifecycle
+    Log.e("activity", "onAttachedToActivity")
     lifecycle?.addObserver(this)
     pluginBinding
       ?.platformViewRegistry?.registerViewFactory(viewType,
@@ -73,24 +72,28 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, ActivityAware,
 
   /// ActivityLifecycleCallbacks
   override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+    Log.e("activity", "onActivityCreated")
     if (activity.hashCode() == activityBinding?.activity.hashCode()) {
       state = Event.ON_CREATE
     }
   }
 
   override fun onActivityStarted(activity: Activity) {
+    Log.e("activity", "onActivityStarted")
     if (activity.hashCode() == activityBinding?.activity.hashCode()) {
       state = Event.ON_START
     }
   }
 
   override fun onActivityResumed(activity: Activity) {
+    Log.e("activity", "onActivityResumed")
     if (activity.hashCode() == activityBinding?.activity.hashCode()) {
       state = Event.ON_RESUME
     }
   }
 
   override fun onActivityPaused(activity: Activity) {
+    Log.e("activity", "onActivityPaused")
     if (activity.hashCode() == activityBinding?.activity.hashCode()) {
       state = Event.ON_PAUSE
     }
@@ -98,11 +101,13 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, ActivityAware,
 
   override fun onActivityStopped(activity: Activity) {
     if (activity.hashCode() == activityBinding?.activity.hashCode()) {
+      Log.e("activity", "onActivityStopped")
       state = Event.ON_STOP
     }
   }
 
   override fun onActivityDestroyed(activity: Activity) {
+    Log.e("activity", "onActivityDestroyed")
     if (activity.hashCode() == activityBinding?.activity.hashCode()) {
       state = Event.ON_DESTROY
       activity.application.unregisterActivityLifecycleCallbacks(this)

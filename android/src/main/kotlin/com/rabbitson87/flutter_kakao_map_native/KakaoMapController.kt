@@ -89,7 +89,13 @@ class KakaoMapController(context: Context, viewId: Int, args: Map<String, Any>, 
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Event) {
+        Log.println (Log.INFO, "receiveLifeCycle", "event: $event")
         state = event
+        if (event == Event.ON_PAUSE) {
+            mapView.onPause()
+        } else if (event == Event.ON_RESUME) {
+            mapView.onResume()
+        }
     }
 
     /// ActivityLifecycleCallbacks
@@ -108,12 +114,14 @@ class KakaoMapController(context: Context, viewId: Int, args: Map<String, Any>, 
     override fun onActivityResumed(activity: Activity) {
         if (activity.hashCode() == activityBinding.activity.hashCode()) {
             state = Event.ON_RESUME
+            mapView.onResume()
         }
     }
 
     override fun onActivityPaused(activity: Activity) {
         if (activity.hashCode() == activityBinding.activity.hashCode()) {
             state = Event.ON_PAUSE
+            mapView.onPause()
         }
     }
 

@@ -1,6 +1,7 @@
 package com.rabbitson87.flutter_kakao_map_native
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.Lifecycle.Event
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -13,13 +14,14 @@ class KakaoMapFactory(private val state: Event?,
                       private val activityBinding: ActivityPluginBinding)
     : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
 
-    override fun create(context: Context?, viewId: Int, args: Any?): PlatformView {
+    override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
         val params = args as Map<String, Any>
         val builder = KakaoMapBuilder()
 
         /// flutter 쪽에서 options 로 데이터 보내면 여기서 처리
+        Log.e("tag", "params: ${params}")
         ///
 
-        return builder.build(context!!, viewId, params, state, pluginBinding, activityBinding)
+        return builder.build(context, viewId, params, state, pluginBinding, activityBinding)
     }
 }
