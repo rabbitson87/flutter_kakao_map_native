@@ -10,7 +10,10 @@
    <application
         android:label="flutter_kakao_map_native_example"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+       android:usesCleartextTraffic="true"
+       >
+       <meta-data android:name="com.kakao.sdk.AppKey" android:value="817fb0fbcaa46fed07976932034c634a"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -27,7 +30,6 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
-            <meta-data android:name="com.kakao.sdk.AppKey" android:value="817fb0fbcaa46fed07976932034c634a"/>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

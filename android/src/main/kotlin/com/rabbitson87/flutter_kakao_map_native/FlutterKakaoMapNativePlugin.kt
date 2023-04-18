@@ -1,7 +1,6 @@
 package com.rabbitson87.flutter_kakao_map_native
 
 import android.app.Activity
-import android.app.Application.ActivityLifecycleCallbacks
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.Lifecycle
@@ -16,7 +15,7 @@ import io.flutter.embedding.engine.plugins.lifecycle.HiddenLifecycleReference
 
 /** FlutterKakaoMapNativePlugin */
 class FlutterKakaoMapNativePlugin: FlutterPlugin, ActivityAware,
-    LifecycleEventObserver, ActivityLifecycleCallbacks {
+    LifecycleEventObserver {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -41,7 +40,6 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, ActivityAware,
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     activityBinding = binding
     lifecycle = (binding.lifecycle as HiddenLifecycleReference).lifecycle
-    Log.e("activity", "onAttachedToActivity")
     lifecycle?.addObserver(this)
     pluginBinding
       ?.platformViewRegistry?.registerViewFactory(viewType,
@@ -67,54 +65,7 @@ class FlutterKakaoMapNativePlugin: FlutterPlugin, ActivityAware,
 
   /// LifecycleEventObserver
   override fun onStateChanged(source: LifecycleOwner, event: Event) {
+    Log.e("activity", "$event")
     state = event
   }
-
-  /// ActivityLifecycleCallbacks
-  override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-    Log.e("activity", "onActivityCreated")
-    if (activity.hashCode() == activityBinding?.activity.hashCode()) {
-      state = Event.ON_CREATE
-    }
-  }
-
-  override fun onActivityStarted(activity: Activity) {
-    Log.e("activity", "onActivityStarted")
-    if (activity.hashCode() == activityBinding?.activity.hashCode()) {
-      state = Event.ON_START
-    }
-  }
-
-  override fun onActivityResumed(activity: Activity) {
-    Log.e("activity", "onActivityResumed")
-    if (activity.hashCode() == activityBinding?.activity.hashCode()) {
-      state = Event.ON_RESUME
-    }
-  }
-
-  override fun onActivityPaused(activity: Activity) {
-    Log.e("activity", "onActivityPaused")
-    if (activity.hashCode() == activityBinding?.activity.hashCode()) {
-      state = Event.ON_PAUSE
-    }
-  }
-
-  override fun onActivityStopped(activity: Activity) {
-    if (activity.hashCode() == activityBinding?.activity.hashCode()) {
-      Log.e("activity", "onActivityStopped")
-      state = Event.ON_STOP
-    }
-  }
-
-  override fun onActivityDestroyed(activity: Activity) {
-    Log.e("activity", "onActivityDestroyed")
-    if (activity.hashCode() == activityBinding?.activity.hashCode()) {
-      state = Event.ON_DESTROY
-      activity.application.unregisterActivityLifecycleCallbacks(this)
-    }
-  }
-
-  override fun onActivitySaveInstanceState(activity: Activity, savedInstanceState: Bundle) {}
-
-
 }
